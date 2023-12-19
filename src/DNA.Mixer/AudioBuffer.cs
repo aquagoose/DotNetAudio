@@ -2,9 +2,9 @@
 
 public struct AudioBuffer
 {
-    public ulong Handle;
+    public nuint Handle;
 
-    public AudioBuffer(ulong handle)
+    public AudioBuffer(nuint handle)
     {
         Handle = handle;
     }

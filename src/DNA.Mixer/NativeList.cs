@@ -19,7 +19,7 @@ public unsafe struct NativeList<T> : IDisposable where T : unmanaged
         Array = (T*) NativeMemory.Alloc(initialCapacity * (nuint) sizeof(T));
     }
 
-    public void Add(in T item)
+    public nuint Add(in T item)
     {
         if (++Length >= _capacity)
         {
@@ -28,6 +28,8 @@ public unsafe struct NativeList<T> : IDisposable where T : unmanaged
         }
 
         Array[Length] = item;
+
+        return Length;
     }
 
     public void Dispose()
