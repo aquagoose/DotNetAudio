@@ -4,12 +4,12 @@ using Pie.SDL;
 
 unsafe
 {
-    const uint sampleRate = 48000;
+    const uint sampleRate = 44100;
     
     AudioMixer mixer = new AudioMixer(sampleRate, 10);
 
-    byte[] audioData = File.ReadAllBytes(@"C:\Users\ollie\Music\TESTFILES\nixonspace-16bitshort.raw");
-    AudioBuffer buffer = mixer.CreateBuffer<byte>(new BufferInfo(BufferType.PCM, new AudioFormat(DataType.I16, 48000, 2)), audioData);
+    byte[] audioData = File.ReadAllBytes(@"C:\Users\ollie\Music\TESTFILES\plokboss-32bitfloat.raw");
+    AudioBuffer buffer = mixer.CreateBuffer<byte>(new BufferInfo(BufferType.PCM, new AudioFormat(DataType.F32, 48000, 2)), audioData);
     mixer.PlayBuffer(buffer, 0);
 
     if (Sdl.Init(Sdl.InitAudio) < 0)

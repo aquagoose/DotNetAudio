@@ -94,9 +94,9 @@ public unsafe class AudioMixer : IDisposable
                 SoundBuffer* buf = voice->Buffer;
                 
                 buffer[i + 0] = GetSample(buf->Data, voice->Position, buf->Info.Format.Type);
-                buffer[i + 1] = GetSample(buf->Data, voice->Position + 2, buf->Info.Format.Type);
+                buffer[i + 1] = GetSample(buf->Data, voice->Position + 4, buf->Info.Format.Type);
 
-                voice->Position += 4;
+                voice->Position += 8;
             }
         }
     }
@@ -104,16 +104,27 @@ public unsafe class AudioMixer : IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private float GetSample(byte* buffer, nuint alignedPosition, DataType dType)
     {
-        return dType switch
+        switch (dType)
         {
-            DataType.I8 => throw new NotImplementedException(),
-            DataType.U8 => (buffer[alignedPosition] - sbyte.MaxValue) / (float) sbyte.MaxValue,
-            DataType.I16 => (short) (buffer[alignedPosition] | (buffer[alignedPosition + 1] << 8)) / (float) short.MaxValue,
-            DataType.U16 => throw new NotImplementedException(),
-            DataType.I32 => throw new NotImplementedException(),
-            DataType.F32 => (float) (buffer[alignedPosition] | (buffer[alignedPosition + 1] << 8) | (buffer[alignedPosition + 2] << 16) | (buffer[alignedPosition + 3] << 24)),
-            _ => throw new ArgumentOutOfRangeException(nameof(dType), dType, null)
-        };
+            case DataType.I8:
+                throw new NotImplementedException();
+            case DataType.U8:
+                return (buffer[alignedPosition] - sbyte.MaxValue) / (float) sbyte.MaxValue;
+            case DataType.I16:
+                return (short) (buffer[alignedPosition] | (buffer[alignedPosition + 1] << 8)) / (float) short.MaxValue;
+            case DataType.U16:
+                throw new NotImplementedException();
+            case DataType.I32:
+                throw new NotImplementedException();
+            case DataType.F32:
+                int b = buffer[alignedPosition] | (buffer[alignedPosition + 1] << 8) |
+                        (buffer[alignedPosition + 2] << 16) | (buffer[alignedPosition + 3] << 24);
+
+                // Have to reinterpret cast the int to float.
+                return *(float*) &b;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(dType), dType, null);
+        }
     }
 
     public void Dispose()
