@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNA", "src\DNA\DNA.csproj",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNA.Mixer", "src\DNA.Mixer\DNA.Mixer.csproj", "{0256976E-D0F3-428D-9FA3-E218C76E822D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4E1CD7BF-8078-4B41-A733-DE2DAC6FDE2A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Mixer", "tests\Test.Mixer\Test.Mixer.csproj", "{E7B12DBC-4D71-4249-9599-C48B2E6EB8DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,12 @@ Global
 		{0256976E-D0F3-428D-9FA3-E218C76E822D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0256976E-D0F3-428D-9FA3-E218C76E822D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0256976E-D0F3-428D-9FA3-E218C76E822D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7B12DBC-4D71-4249-9599-C48B2E6EB8DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7B12DBC-4D71-4249-9599-C48B2E6EB8DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7B12DBC-4D71-4249-9599-C48B2E6EB8DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7B12DBC-4D71-4249-9599-C48B2E6EB8DB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E7B12DBC-4D71-4249-9599-C48B2E6EB8DB} = {4E1CD7BF-8078-4B41-A733-DE2DAC6FDE2A}
 	EndGlobalSection
 EndGlobal
