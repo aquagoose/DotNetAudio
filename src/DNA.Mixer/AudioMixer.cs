@@ -52,6 +52,11 @@ public unsafe class AudioMixer : IDisposable
         buffer->DataLength = dataLength;
         buffer->Info = info;
 
+        byte dataTypeSizeInBytes = info.Format.Type.Bytes();
+
+        buffer->StereoAlignment = (byte) (dataTypeSizeInBytes * (info.Format.Channels - 1));
+        buffer->Alignment = (byte) (dataTypeSizeInBytes * info.Format.Channels);
+
         return new AudioBuffer(availableBuffer);
     }
 
@@ -72,6 +77,8 @@ public unsafe class AudioMixer : IDisposable
 
         v->Position = 0;
         v->FinePosition = 0.0;
+
+        v->Speed = buf->Info.Format.SampleRate / (double) SampleRate;
         
         v->Buffer = buf;
         v->Playing = true;
@@ -92,17 +99,23 @@ public unsafe class AudioMixer : IDisposable
                     continue;
                 
                 SoundBuffer* buf = voice->Buffer;
-                
-                buffer[i + 0] = GetSample(buf->Data, voice->Position, buf->Info.Format.Type);
-                buffer[i + 1] = GetSample(buf->Data, voice->Position + 4, buf->Info.Format.Type);
+                AudioFormat* format = &buf->Info.Format;
 
-                voice->Position += 8;
+                nuint bufferPosition = voice->Position * buf->Alignment;
+                
+                buffer[i + 0] += GetSample(buf->Data, bufferPosition, format->Type);
+                buffer[i + 1] += GetSample(buf->Data, bufferPosition + buf->StereoAlignment, format->Type);
+
+                voice->FinePosition += voice->Speed;
+
+                voice->Position += (nuint) voice->FinePosition;
+                voice->FinePosition -= (int) voice->FinePosition;
             }
         }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    private float GetSample(byte* buffer, nuint alignedPosition, DataType dType)
+    private static float GetSample(byte* buffer, nuint alignedPosition, DataType dType)
     {
         switch (dType)
         {
@@ -142,6 +155,11 @@ public unsafe class AudioMixer : IDisposable
 
         public BufferInfo Info;
 
+        // Used for stereo sounds - represents the offset in bytes between the left and the right channels.
+        // A mono buffer will have a stereo alignment of 0.
+        public byte StereoAlignment;
+        
+        // The alignment, in bytes, of this buffer. This determines how many bytes per full sample there are.
         public byte Alignment;
     }
 
@@ -152,6 +170,8 @@ public unsafe class AudioMixer : IDisposable
 
         public nuint Position;
         public double FinePosition;
+
+        public double Speed;
 
         public nuint EndPosition;
         
