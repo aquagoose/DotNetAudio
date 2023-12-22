@@ -7,12 +7,13 @@ unsafe
     const uint sampleRate = 48000;
     
     AudioMixer mixer = new AudioMixer(sampleRate, 10);
+    //mixer.InterpolationMode = InterpolationMode.None;
 
-    byte[] audioData = File.ReadAllBytes(@"C:\Users\ollie\Music\TESTFILES\house2-f32.raw");
-    AudioBuffer buffer = mixer.CreateBuffer<byte>(new BufferInfo(BufferType.PCM, new AudioFormat(DataType.F32, 48000, 2)), audioData);
+    byte[] audioData = File.ReadAllBytes(@"C:\Users\ollie\Music\TESTFILES\Always There-32bitfloat.raw");
+    AudioBuffer buffer = mixer.CreateBuffer<byte>(new BufferInfo(BufferType.PCM, new AudioFormat(DataType.F32, 44100, 2)), audioData);
     mixer.PlayBuffer(buffer, 0, new VoiceProperties()
     {
-        Pitch = 0.8
+        Pitch = 0.2
     });
 
     if (Sdl.Init(Sdl.InitAudio) < 0)

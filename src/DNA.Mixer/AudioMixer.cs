@@ -16,10 +16,14 @@ public unsafe class AudioMixer : IDisposable
 
     public readonly uint NumVoices;
 
+    public InterpolationMode InterpolationMode;
+
     public AudioMixer(uint sampleRate, uint numVoices)
     {
         SampleRate = sampleRate;
         NumVoices = numVoices;
+
+        InterpolationMode = InterpolationMode.Linear;
         
         _buffers = new NativeList<SoundBuffer>();
         
@@ -80,6 +84,8 @@ public unsafe class AudioMixer : IDisposable
 
         v->Speed = buf->Info.Format.SampleRate / (double) SampleRate;
         v->Properties = properties;
+
+        v->EndPosition = buf->DataLength / buf->Alignment;
         
         v->Buffer = buf;
         v->Playing = true;
@@ -107,14 +113,48 @@ public unsafe class AudioMixer : IDisposable
                 VoiceProperties* props = &voice->Properties;
 
                 nuint bufferPosition = voice->Position * buf->Alignment;
+
+                float lSample = GetSample(buf->Data, bufferPosition, format->Type);
+                float rSample = GetSample(buf->Data, bufferPosition + buf->StereoAlignment, format->Type);
+
+                switch (InterpolationMode)
+                {
+                    case InterpolationMode.None:
+                        break;
+                    case InterpolationMode.Linear:
+                        // Handle linear interpolation.
+                        nuint lastBufferPosition = voice->LastSamplePosition * buf->Alignment;
+
+                        float pLSample = GetSample(buf->Data, lastBufferPosition, format->Type);
+                        float pRSample = GetSample(buf->Data, lastBufferPosition + buf->StereoAlignment, format->Type);
+
+                        lSample = float.Lerp(pLSample, lSample, (float) voice->FinePosition);
+                        rSample = float.Lerp(pRSample, rSample, (float) voice->FinePosition);
+                        
+                        break;
+                }
                 
-                buffer[i + 0] += GetSample(buf->Data, bufferPosition, format->Type) * props->Volume;
-                buffer[i + 1] += GetSample(buf->Data, bufferPosition + buf->StereoAlignment, format->Type) * props->Volume;
+                buffer[i + 0] += lSample * props->Volume;
+                buffer[i + 1] += rSample * props->Volume;
 
                 voice->FinePosition += voice->Speed * props->Pitch;
 
                 voice->Position += (nuint) voice->FinePosition;
                 voice->FinePosition -= (int) voice->FinePosition;
+
+                if (voice->Position != voice->LastPosition)
+                {
+                    voice->LastSamplePosition = voice->LastPosition;
+                    voice->LastPosition = voice->Position;
+                }
+
+                // Handle the voice reaching the end position (usually the end of the buffer unless a loop point is defined).
+                if (voice->Position >= voice->EndPosition)
+                {
+                    // TODO: Looping, buffering etc.
+                    voice->Playing = false;
+                    voice->Buffer = null;
+                }
             }
         }
     }
@@ -176,6 +216,9 @@ public unsafe class AudioMixer : IDisposable
 
         public nuint Position;
         public double FinePosition;
+
+        public nuint LastPosition;
+        public nuint LastSamplePosition;
 
         public double Speed;
 
