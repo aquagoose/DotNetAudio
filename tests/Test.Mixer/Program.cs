@@ -8,9 +8,12 @@ unsafe
     
     AudioMixer mixer = new AudioMixer(sampleRate, 10);
 
-    byte[] audioData = File.ReadAllBytes(@"C:\Users\ollie\Music\TESTFILES\necros_-_introspection-32bitfloat.raw");
+    byte[] audioData = File.ReadAllBytes(@"C:\Users\ollie\Music\TESTFILES\house2-f32.raw");
     AudioBuffer buffer = mixer.CreateBuffer<byte>(new BufferInfo(BufferType.PCM, new AudioFormat(DataType.F32, 48000, 2)), audioData);
-    mixer.PlayBuffer(buffer, 0);
+    mixer.PlayBuffer(buffer, 0, new VoiceProperties()
+    {
+        Pitch = 0.8
+    });
 
     if (Sdl.Init(Sdl.InitAudio) < 0)
         throw new Exception("SDL did not init: " + Sdl.GetErrorS());
@@ -38,6 +41,8 @@ unsafe
     while (true)
     {
         Thread.Sleep(1000);
+
+        //mixer.GetVoicePropertiesRef(0).Speed += 0.1;
     }
     
     Sdl.CloseAudioDevice(device);

@@ -69,7 +69,7 @@ public unsafe class AudioMixer : IDisposable
         _availableBufferSlots.Enqueue(buffer.Handle);
     }
 
-    public void PlayBuffer(AudioBuffer buffer, uint voice)
+    public void PlayBuffer(AudioBuffer buffer, uint voice, in VoiceProperties properties)
     {
         SoundBuffer* buf = &_buffers.Array[buffer.Handle];
 
@@ -79,10 +79,14 @@ public unsafe class AudioMixer : IDisposable
         v->FinePosition = 0.0;
 
         v->Speed = buf->Info.Format.SampleRate / (double) SampleRate;
+        v->Properties = properties;
         
         v->Buffer = buf;
         v->Playing = true;
     }
+
+    public ref VoiceProperties GetVoicePropertiesRef(uint voice)
+        => ref _voices.Array[voice].Properties;
 
     public void MixStereoFloat(Span<float> buffer)
     {
@@ -100,13 +104,14 @@ public unsafe class AudioMixer : IDisposable
                 
                 SoundBuffer* buf = voice->Buffer;
                 AudioFormat* format = &buf->Info.Format;
+                VoiceProperties* props = &voice->Properties;
 
                 nuint bufferPosition = voice->Position * buf->Alignment;
                 
-                buffer[i + 0] += GetSample(buf->Data, bufferPosition, format->Type);
-                buffer[i + 1] += GetSample(buf->Data, bufferPosition + buf->StereoAlignment, format->Type);
+                buffer[i + 0] += GetSample(buf->Data, bufferPosition, format->Type) * props->Volume;
+                buffer[i + 1] += GetSample(buf->Data, bufferPosition + buf->StereoAlignment, format->Type) * props->Volume;
 
-                voice->FinePosition += voice->Speed;
+                voice->FinePosition += voice->Speed * props->Pitch;
 
                 voice->Position += (nuint) voice->FinePosition;
                 voice->FinePosition -= (int) voice->FinePosition;
@@ -120,7 +125,7 @@ public unsafe class AudioMixer : IDisposable
         switch (dType)
         {
             case DataType.I8:
-                throw new NotImplementedException();
+                return (sbyte) buffer[alignedPosition] / (float) sbyte.MaxValue;
             case DataType.U8:
                 return (buffer[alignedPosition] - sbyte.MaxValue) / (float) sbyte.MaxValue;
             case DataType.I16:
@@ -128,7 +133,8 @@ public unsafe class AudioMixer : IDisposable
             case DataType.U16:
                 throw new NotImplementedException();
             case DataType.I32:
-                throw new NotImplementedException();
+                return (buffer[alignedPosition] | (buffer[alignedPosition + 1] << 8) |
+                       (buffer[alignedPosition + 2] << 16) | (buffer[alignedPosition + 3] << 24)) / (float) int.MaxValue;
             case DataType.F32:
                 int b = buffer[alignedPosition] | (buffer[alignedPosition + 1] << 8) |
                         (buffer[alignedPosition + 2] << 16) | (buffer[alignedPosition + 3] << 24);
@@ -176,5 +182,7 @@ public unsafe class AudioMixer : IDisposable
         public nuint EndPosition;
         
         public bool Playing;
+
+        public VoiceProperties Properties;
     }
 }
