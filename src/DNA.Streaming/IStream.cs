@@ -1,6 +1,12 @@
-﻿namespace DNA.Streaming;
+﻿using DNA.Base;
 
-public interface IStream
+namespace DNA.Streaming;
+
+public interface IStream : IDisposable
 {
-    
+    public AudioFormat Format { get; }
+
+    public ulong GetBuffer(Span<byte> buffer);
+
+    public byte[] GetPCM();
 }

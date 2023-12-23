@@ -10,6 +10,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\DNA.Mixer\DNA.Mixer.csproj" />
+      <ProjectReference Include="..\..\src\DNA.Streaming\DNA.Streaming.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,6 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using DNA.Base;
 using DNA.Mixer;
+using DNA.Streaming;
 using Pie.SDL;
 
 unsafe
@@ -10,8 +11,9 @@ unsafe
     AudioMixer mixer = new AudioMixer(sampleRate, 10);
     //mixer.InterpolationMode = InterpolationMode.None;
 
-    byte[] audioData = File.ReadAllBytes(@"C:\Users\ollie\Music\TESTFILES\greengrove-16bitshort.raw");
-    AudioBuffer buffer = mixer.CreateBuffer<byte>(new BufferInfo(BufferType.PCM, new AudioFormat(DataType.I16, 44100, 2)), audioData);
+    using Wav wav = new Wav(@"C:\Users\ollie\Music\1-04 SKYSCRAPER SEQUENCE.wav");
+    
+    AudioBuffer buffer = mixer.CreateBuffer<byte>(new BufferInfo(BufferType.PCM, wav.Format), wav.GetPCM());
     mixer.PlayBuffer(buffer, 0, new VoiceProperties()
     {
         Pitch = 1.0
