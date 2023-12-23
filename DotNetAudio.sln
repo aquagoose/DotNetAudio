@@ -8,6 +8,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4E1CD7BF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Mixer", "tests\Test.Mixer\Test.Mixer.csproj", "{E7B12DBC-4D71-4249-9599-C48B2E6EB8DB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNA.Streaming", "src\DNA.Streaming\DNA.Streaming.csproj", "{A466CBEE-F9B5-4D2E-87B5-42A205681739}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNA.Base", "src\DNA.Base\DNA.Base.csproj", "{5B81DFF7-41CF-4D86-91EF-A6454773E8A0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +30,14 @@ Global
 		{E7B12DBC-4D71-4249-9599-C48B2E6EB8DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7B12DBC-4D71-4249-9599-C48B2E6EB8DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7B12DBC-4D71-4249-9599-C48B2E6EB8DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A466CBEE-F9B5-4D2E-87B5-42A205681739}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A466CBEE-F9B5-4D2E-87B5-42A205681739}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A466CBEE-F9B5-4D2E-87B5-42A205681739}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A466CBEE-F9B5-4D2E-87B5-42A205681739}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B81DFF7-41CF-4D86-91EF-A6454773E8A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B81DFF7-41CF-4D86-91EF-A6454773E8A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B81DFF7-41CF-4D86-91EF-A6454773E8A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B81DFF7-41CF-4D86-91EF-A6454773E8A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E7B12DBC-4D71-4249-9599-C48B2E6EB8DB} = {4E1CD7BF-8078-4B41-A733-DE2DAC6FDE2A}

@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using DNA.Base;
 using DNA.Mixer;
 using Pie.SDL;
 
@@ -43,7 +44,7 @@ unsafe
     {
         Thread.Sleep(1000);
 
-        //mixer.GetVoicePropertiesRef(0).Speed += 0.1;
+        //mixer.GetVoicePropertiesRef(0).Pitch += 0.05;
     }
     
     Sdl.CloseAudioDevice(device);

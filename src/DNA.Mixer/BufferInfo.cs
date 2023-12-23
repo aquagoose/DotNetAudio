@@ -1,4 +1,6 @@
-﻿namespace DNA.Mixer;
+﻿using DNA.Base;
+
+namespace DNA.Mixer;
 
 public struct BufferInfo
 {

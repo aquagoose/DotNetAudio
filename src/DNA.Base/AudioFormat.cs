@@ -1,4 +1,4 @@
-﻿namespace DNA.Mixer;
+﻿namespace DNA.Base;
 
 public struct AudioFormat
 {
