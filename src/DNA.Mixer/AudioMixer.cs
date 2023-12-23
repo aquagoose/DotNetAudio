@@ -94,12 +94,31 @@ public unsafe class AudioMixer : IDisposable
     public ref VoiceProperties GetVoicePropertiesRef(uint voice)
         => ref _voices.Array[voice].Properties;
 
-    public void MixStereoFloat(Span<float> buffer)
+    public void MixFloat(Span<float> buffer, SoundSetup setup)
     {
-        for (int i = 0; i < buffer.Length; i += 2)
+        // Determines how much to step by for each sample.
+        int stepAmount = setup switch
         {
-            buffer[i + 0] = 0;
-            buffer[i + 1] = 0;
+            SoundSetup.Mono => 1,
+            SoundSetup.Stereo => 2,
+            _ => throw new ArgumentOutOfRangeException(nameof(setup), setup, null)
+        };
+        
+        for (int i = 0; i < buffer.Length; i += stepAmount)
+        {
+            switch (setup)
+            {
+                // Zero out the buffer.
+                case SoundSetup.Mono:
+                    buffer[i] = 0;
+                    break;
+                case SoundSetup.Stereo:
+                    buffer[i + 0] = 0;
+                    buffer[i + 1] = 0;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(setup), setup, null);
+            }
             
             for (uint c = 0; c < NumVoices; c++)
             {
@@ -133,9 +152,21 @@ public unsafe class AudioMixer : IDisposable
                         
                         break;
                 }
-                
-                buffer[i + 0] += lSample * props->Volume;
-                buffer[i + 1] += rSample * props->Volume;
+
+                switch (setup)
+                {
+                    case SoundSetup.Mono:
+                        // For mono, we simply add the left and right channels together, and divide by two.
+                        // This is a really cheap and simple way of converting from stereo to mono,
+                        buffer[i] += ((lSample + rSample) / 2) * props->Volume;
+                        break;
+                    case SoundSetup.Stereo:
+                        buffer[i + 0] += lSample * props->Volume;
+                        buffer[i + 1] += rSample * props->Volume;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(setup), setup, null);
+                }
 
                 voice->FinePosition += voice->Speed * props->Pitch;
 
