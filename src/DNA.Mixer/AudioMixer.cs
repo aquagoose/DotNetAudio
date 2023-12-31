@@ -19,12 +19,15 @@ public unsafe class AudioMixer : IDisposable
 
     public InterpolationMode InterpolationMode;
 
+    public float MasterVolume;
+
     public AudioMixer(uint sampleRate, uint numVoices)
     {
         SampleRate = sampleRate;
         NumVoices = numVoices;
 
         InterpolationMode = InterpolationMode.Linear;
+        MasterVolume = 1.0f;
         
         _buffers = new NativeList<SoundBuffer>();
         
@@ -159,11 +162,11 @@ public unsafe class AudioMixer : IDisposable
                     case SoundSetup.Mono:
                         // For mono, we simply add the left and right channels together, and divide by two.
                         // This is a really cheap and simple way of converting from stereo to mono,
-                        buffer[i] += ((lSample + rSample) / 2) * props->Volume;
+                        buffer[i] += float.Clamp(((lSample + rSample) / 2) * props->Volume * MasterVolume, -1, 1);
                         break;
                     case SoundSetup.Stereo:
-                        buffer[i + 0] += lSample * props->Volume;
-                        buffer[i + 1] += rSample * props->Volume;
+                        buffer[i + 0] += float.Clamp(lSample * props->Volume * MasterVolume, -1, 1);
+                        buffer[i + 1] += float.Clamp(rSample * props->Volume * MasterVolume, -1, 1);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(setup), setup, null);

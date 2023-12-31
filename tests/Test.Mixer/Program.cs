@@ -9,9 +9,10 @@ unsafe
     const uint sampleRate = 48000;
     
     AudioMixer mixer = new AudioMixer(sampleRate, 10);
+    mixer.MasterVolume = 1.0f;
     //mixer.InterpolationMode = InterpolationMode.None;
 
-    using Wav wav = new Wav(@"C:\Users\ollie\Music\1-04 SKYSCRAPER SEQUENCE.wav");
+    using Wav wav = new Wav(@"C:\Users\ollie\Music\DEADLOCK.wav");
     
     AudioBuffer buffer = mixer.CreateBuffer<byte>(new BufferInfo(BufferType.PCM, wav.Format), wav.GetPCM());
     mixer.PlayBuffer(buffer, 0, new VoiceProperties()
@@ -45,6 +46,7 @@ unsafe
     while (true)
     {
         Thread.Sleep(1000);
+        //GC.Collect();
 
         //mixer.GetVoicePropertiesRef(0).Pitch += 0.05;
     }
